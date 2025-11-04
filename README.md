@@ -1,6 +1,6 @@
 # Router_SRC
-- 라즈베리파이 기반 라우터 환경에서 dhcpcd, hostapd, dnsmasq 서비스 상태를 주기적으로 점검하고 비정상 상태일 경우 자동 복구 및 재부팅을 수행하는 네트워크 모니터링 프로그램입니다.
-- LED 2개(GREEN/RED)를 이용해 시스템 상태를 시각적으로 표시합니다.
+- 라즈베리파이 기반 라우터 환경에서 dhcpcd, hostapd, dnsmasq 서비스 상태를 주기적으로 점검하고 비정상 상태일 경우 자동 복구 및 재부팅을 수행하는 네트워크 모니터링 프로그램
+- LED 2개(GREEN/RED)를 이용해 시스템 상태를 시각적으로 표시함
 
 ---
 
@@ -19,13 +19,13 @@
 
 ## 주요 서비스 복구 순서
 
-- 프로그램은 10초마다 다음 순서로 서비스 상태를 점검
+- 프로그램은 10초마다 다음 순서로 서비스 상태를 점검함
 
 1. dhcpcd.service
 2. hostapd.service
 3. dnsmasq.service
 
-- 각 서비스가 비활성 상태(inactive) 이거나 실패 상태(failed) 일 경우 자동으로 재시작
+- 각 서비스가 비활성 상태(inactive) 이거나 실패 상태(failed) 일 경우 자동으로 재시작함함
 
 ---
 
@@ -61,7 +61,7 @@ gcc main.c -o main -lwiringPi
 
 ## systemd 서비스 등록
 
-- 부팅 시 자동 실행되도록 systemd 서비스 등록을 진행
+- 부팅 시 자동 실행되도록 systemd 서비스 등록을 진행함함
 
 ### systemd 서비스 등록
 
@@ -85,6 +85,7 @@ StandardError=journal
 [Install]
 WantedBy=multi-user.target
 ```
+
 ### 서비스 등록 및 활성화
 
 ```
