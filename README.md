@@ -2,6 +2,33 @@
 - 라즈베리파이 기반 라우터 환경에서 dhcpcd, hostapd, dnsmasq 서비스 상태를 주기적으로 점검하고 비정상 상태일 경우 자동 복구 및 재부팅을 수행하는 네트워크 모니터링 프로그램입니다.
 - LED 2개(GREEN/RED)를 이용해 시스템 상태를 시각적으로 표시합니다.
 
+---
+
+## 정상 동작 시 LED 상태 요약
+
+| RED     | GREEN   | 의미                      |
+| ------- | ------- | ----------------------- |
+| OFF     | OFF     | 전원 꺼짐                   |
+| ON      | OFF     | 전원 켜짐 (대기)              |
+| OFF     | 3회 점멸   | 코드 실행 중                 |
+| 3회 점멸   | OFF     | 네트워크 서비스 오류, 복구 시도      |
+| ON      | ON      | 정상 연결                   |
+| (3회 점멸) | (3회 점멸) | 초기화 상태 (추후 버튼 기능 추가 예정) |
+
+---
+
+## 주요 서비스 복구 순서
+
+- 프로그램은 10초마다 다음 순서로 서비스 상태를 점검
+
+1. dhcpcd.service
+2. hostapd.service
+3. dnsmasq.service
+
+- 각 서비스가 비활성 상태(inactive) 이거나 실패 상태(failed) 일 경우 자동으로 재시작
+
+---
+
 ## wiringPi 설치
 
 ```
@@ -67,28 +94,4 @@ sudo systemctl enable router-monitor.service
 sudo systemctl start router-monitor.service
 ```
 
----
-
-## 정상 동작 시 LED 상태 요약
-
-| RED     | GREEN   | 의미                      |
-| ------- | ------- | ----------------------- |
-| OFF     | OFF     | 전원 꺼짐                   |
-| ON      | OFF     | 전원 켜짐 (대기)              |
-| OFF     | 3회 점멸   | 코드 실행 중                 |
-| 3회 점멸   | OFF     | 네트워크 서비스 오류, 복구 시도      |
-| ON      | ON      | 정상 연결                   |
-| (3회 점멸) | (3회 점멸) | 초기화 상태 (추후 버튼 기능 추가 예정) |
-
----
-
-## 주요 서비스 복구 순서
-
-- 프로그램은 10초마다 다음 순서로 서비스 상태를 점검
-
-1. dhcpcd.service
-2. hostapd.service
-3. dnsmasq.service
-
-- 각 서비스가 비활성 상태(inactive) 이거나 실패 상태(failed) 일 경우 자동으로 재시작
 
