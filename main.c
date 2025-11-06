@@ -29,20 +29,20 @@ void led_off_all(void) {
 
 void blink_led(int pin, int count, int delay_ms) {
     for (int i = 0; i < count; i++) {
-        digitalWrite(pin, HIGH);
-        delay(delay_ms);
         digitalWrite(pin, LOW);
+        delay(delay_ms);
+        digitalWrite(pin, HIGH);
         delay(delay_ms);
     }
 }
 
 void blink_led_both(int pin_1 , int pin_2, int count, int delay_ms) {
     for (int i = 0; i < count; i++) {
-        digitalWrite(pin_1, HIGH);
-        digitalWrite(pin_2, HIGH);
-        delay(delay_ms);
         digitalWrite(pin_1, LOW);
         digitalWrite(pin_2, LOW);
+        delay(delay_ms);
+        digitalWrite(pin_1, HIGH);
+        digitalWrite(pin_2, HIGH);
         delay(delay_ms);
     }
 }
@@ -57,16 +57,16 @@ void show_normal(void) {
 
 void show_network_error(void) {
     digitalWrite(GREEN, LOW);
-    blink_led(RED, 4, 300);
+    blink_led(RED, 3, 300);
 }
 
 void show_code_running(void) {
     digitalWrite(RED, LOW);
-    blink_led(GREEN, 4, 300);
+    blink_led(GREEN, 3, 300);
 }
 
 void service_error(void){
-    blink_led_both(RED, GREEN, 4, 300);
+    blink_led_both(RED, GREEN, 3, 300);
 }
 
 // -------------------------------
@@ -106,6 +106,21 @@ void restart_service(const char *service) {
 }
 
 // -------------------------------
+// eth0 링크 상태 확인 함수 추가
+// -------------------------------
+int check_eth0_link(void) {
+    FILE *fp = fopen("/sys/class/net/eth0/carrier", "r");
+    if (!fp) {
+        perror("[ERR] eth0 carrier check failed");
+        return 0;
+    }
+    int link = 0;
+    fscanf(fp, "%d", &link);
+    fclose(fp);
+    return link == 1;  // 1이면 연결됨, 0이면 연결 안됨
+}
+
+// -------------------------------
 // 네트워크 복구 순서
 // -------------------------------
 int recover_network_services(void) {
@@ -142,13 +157,23 @@ int main(void) {
     printf("[INFO] Network monitor started\n");
 
     while (1) {
-        if (recover_network_services()) {
+        int service_ok = recover_network_services();
+        int eth_link_ok = check_eth0_link();
+
+        if (service_ok && eth_link_ok) {
             show_normal();
         } else {
-            show_network_error();
-            printf("[FATAL] Some services failed. System rebooting...\n");
+
+            if (!eth_link_ok)
+                show_network_error();
+                printf("[ERR] eth0 link down (케이블 미연결 or 인터넷 끊김)\n");
+            if (!service_ok)
+                printf("[ERR] One or more network services failed\n");
+
+            printf("[FATAL] Some services or link failed. System rebooting...\n");
             //system("sudo reboot");
         }
+
         delay(10000); // 10초마다 감시
     }
 
