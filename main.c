@@ -16,10 +16,22 @@ void init_gpio(void) {
         printf("[ERR] wiringPi setup failed\n");
         _exit(1);
     }
-    pinMode(RED, OUTPUT);
+    pinMode(RED, PWM_OUTPUT);
     pinMode(GREEN, OUTPUT);
-    digitalWrite(RED, LOW);
+
+    // PWM 설정
+    pwmSetMode(PWM_MODE_MS);        //마크 스페이스 모드 -> 정확한 주기
+    pwmSetRange(1024);              //PWM 값 범위 0 ~ 1023
+    pwmSetClock(192);               //PWM 주파수 조정 ( 약 1000Hz 근처 )
+
+    pwmWrite(RED, 0);
     digitalWrite(GREEN, LOW);
+}
+
+void set_led_brightness(int pin, int brightness){
+    if(brightness < 0) brightness = 0;
+    if(brightness > 1023) brightness = 1023;
+    pwmWrite(pin, brightness);
 }
 
 void led_off_all(void) {
@@ -38,10 +50,10 @@ void blink_led(int pin, int count, int delay_ms) {
 
 void blink_led_both(int pin_1 , int pin_2, int count, int delay_ms) {
     for (int i = 0; i < count; i++) {
-        digitalWrite(pin_1, LOW);
+        pwmWrite(pin_1, 0);
         digitalWrite(pin_2, LOW);
         delay(delay_ms);
-        digitalWrite(pin_1, HIGH);
+        pwmWrite(pin_1, 100);
         digitalWrite(pin_2, HIGH);
         delay(delay_ms);
     }
@@ -51,7 +63,8 @@ void blink_led_both(int pin_1 , int pin_2, int count, int delay_ms) {
 // LED 상태 표시
 // -------------------------------
 void show_normal(void) {
-    digitalWrite(RED, HIGH);
+    //digitalWrite(RED, HIGH);
+    set_led_brightness(RED, 100);
     digitalWrite(GREEN, HIGH);
 }
 
@@ -171,6 +184,7 @@ int main(void) {
                 printf("[ERR] One or more network services failed\n");
 
             printf("[FATAL] Some services or link failed. System rebooting...\n");
+            led_off_all();
             //system("sudo reboot");
         }
 
