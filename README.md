@@ -5,7 +5,7 @@
 ---
 
 ## 수정된 부분
-- wiringpi.h -> gpuod.h
+- wiringpi.h -> gpiod.h
 
 ---
 
@@ -31,7 +31,9 @@ cd /root/Network_service
 
 ---
 
-## main.c 코드 빌드 ( 크로스 컴파일 )
+## main.c 코드 빌드 ( 크로스 컴파일 ) 
+
+- 크로스 컴파일 귀찮으면 위에 올려둔 LEDControl 실행파일 가져다 쓰면 됩니다.
 
 ```
 make
