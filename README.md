@@ -42,6 +42,40 @@ make
 
 ## 서비스 등록
 
+- vi /etc/init.d/LED_Network
+
+```
+#!/bin/sh /etc/rc.common
+
+START=98
+STOP=10
+
+USE_PROCD=1
+
+PROG=/root/Network_service/LEDControl
+
+start_service(){
+        procd_open_instance
+        procd_set_param command "$PROG"
+
+        procd_set_param respawn ${respawn_threshold:-3600} ${respawn_timeout:-5} ${respawn_retry:-5}
+
+        procd_set_param stdout 1
+        procd_set_param stderr 1
+
+        procd_close_instance
+}
+```
+
+### 서비스 적용
+
+```
+chmod +x /etc/init.d/LED_Network
+/etc/init.d/LED_Network enable
+/etc/init.d/LED_Network start
+
+```
+
 - 부팅 시 자동 실행되도록 systemd 서비스 등록을 진행함함
 
 
